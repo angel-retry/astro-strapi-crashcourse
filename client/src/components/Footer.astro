@@ -1,0 +1,110 @@
+---
+import type { TFooter } from "../types";
+import StrapiImage from "./StrapiImage.astro";
+
+interface Props {
+  data: TFooter;
+  class?: string;
+}
+
+const { data } = Astro.props;
+const { logo, navItems, socialLinks, text } = data;
+
+if (!data) return null;
+
+const currentYear = new Date().getFullYear();
+const styles = {
+  section: "py-20 mt-20 bg-gray-100",
+  container: "container mx-auto px-4",
+  topSection:
+    "pb-12 flex flex-wrap items-center justify-between border-b border-gray-100",
+  logoContainer: "w-full lg:w-1/5 mb-12 lg:mb-4",
+  logoLink:
+    "inline-block text-3xl font-bold leading-none hover:opacity-80 transition-opacity",
+  navContainer: "w-full lg:w-auto",
+  navList: "flex flex-wrap lg:space-x-5 items-center",
+  navItem: "w-full md:w-auto mb-2 md:mb-0",
+  navLink: "lg:text-sm text-gray-400 hover:text-gray-500 transition-colors",
+  bottomSection: "mt-8 flex flex-wrap justify-between items-center",
+  copyright: "order-last text-sm text-gray-400",
+  socialContainer: "mb-4 lg:mb-0 order-first lg:order-last flex gap-2",
+  socialLink:
+    "inline-block p-2 bg-gray-50 hover:bg-gray-100 rounded transition-colors",
+};
+---
+
+<footer class={`${styles.section} ${Astro.props.class || ""}`}>
+  <div class={styles.container}>
+    <div class={styles.topSection}>
+      {
+        logo && (
+          <div class={styles.logoContainer}>
+            <a
+              class={styles.logoLink}
+              href={logo.href || "/"}
+              aria-label="Home"
+            >
+              {logo.image && (
+                <StrapiImage
+                  src={logo.image.url}
+                  alt={logo.image.alternativeText || "Logo"}
+                  height={40}
+                  width={40}
+                  class="h-10 w-10"
+                />
+              )}
+            </a>
+          </div>
+        )
+      }
+
+      {
+        navItems && navItems.length > 0 && (
+          <nav class={styles.navContainer} aria-label="Footer navigation">
+            <ul class={styles.navList}>
+              {navItems.map((item) => (
+                <li class={styles.navItem}>
+                  <a class={styles.navLink} href={item.href || "#"}>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+    </div>
+
+    <div class={styles.bottomSection}>
+      <p class={styles.copyright}>
+        &copy; {currentYear}. {text || "All rights reserved."}
+      </p>
+
+      {
+        socialLinks && socialLinks.length > 0 && (
+          <div class={styles.socialContainer}>
+            {socialLinks.map((item) => (
+              <a
+                class={styles.socialLink}
+                href={item.href || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit our ${item.image?.alternativeText || "social media"}`}
+              >
+                {item.image && (
+                  <StrapiImage
+                    src={item.image.url}
+                    alt={item.image.alternativeText || "Social media icon"}
+                    height={20}
+                    width={20}
+                    class="h-5 w-5"
+                  />
+                )}
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</footer>

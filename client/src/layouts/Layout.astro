@@ -2,6 +2,10 @@
 import type { TBanner, THeader, TFooter } from "../types";
 import "../styles/global.css";
 
+import Banner from "../components/Banner.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
 type TStrapiResponse<T = null> = {
   success: boolean;
   data?: T;
@@ -46,7 +50,12 @@ async function getStrapiGlobalData(): Promise<TStrapiResponse<TGlobalData>> {
 
 const globalData = await getStrapiGlobalData();
 
-const banner = globalData.data?.banner;
+if (globalData.error) {
+  console.error("Error fetching global data:", globalData.error);
+  throw new Error(globalData.error.message);
+}
+
+const { banner, header, footer } = globalData.data ?? {};
 ---
 
 <!doctype html>
@@ -59,11 +68,9 @@ const banner = globalData.data?.banner;
     <title>Astro Basics</title>
   </head>
   <body>
-    <div class="box">header</div>
-    {banner?.isVisible && <div>{banner.description}</div>}
-    <!-- <slot /> -->
-    <div class="box">footer</div>
-    <pre>{JSON.stringify(globalData)}</pre>
+    {banner && <Banner data={banner} />}
+    {header && <Header data={header} />}
+    {footer && <Footer data={footer} />}
   </body>
 </html>
 
@@ -73,14 +80,5 @@ const banner = globalData.data?.banner;
     margin: 0;
     width: 100%;
     height: 100%;
-  }
-
-  .box {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    padding: 4rem;
-    background-color: aqua;
   }
 </style>
